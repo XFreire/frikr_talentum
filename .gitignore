@@ -1,0 +1,4 @@
+.idea
+frikrenv
+*.sqlite3
+*.pyc
