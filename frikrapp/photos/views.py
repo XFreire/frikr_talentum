@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from models import Photo, VISIBILITY_PUBLIC
 from django.http.response import HttpResponseNotFound
 from django.contrib.auth import authenticate, login, logout
-from forms import LoginForm
+from forms import LoginForm, PhotoForm
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 
@@ -97,6 +97,27 @@ def user_profile(request):
 
 
 
+@login_required()
+def create_photo(request):
+    """
+    Gestiona la creacion de fotos
+    :param request:
+    :return:
+    """
+    new_photo = None
+    if request.method == 'POST':
+        photo_with_user = Photo(owner=request.user) # creamos foto para el usuario autenticado
+        form = PhotoForm(request.POST, instance=photo_with_user)
+        if form.is_valid():
+            new_photo = form.save()
+            form = PhotoForm()
+    else:
+        form = PhotoForm()
+    context = {
+        'form' : form,
+        'photo' : new_photo
+    }
+    return render(request, 'photos/create_photo.html', context)
 
 
 

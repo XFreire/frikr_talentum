@@ -11,5 +11,6 @@ urlpatterns = patterns('',
     url(r'^photos/(?P<pk>[0-9]+)$', 'photos.views.photo_detail'),
     url(r'^login$', 'photos.views.user_login'),
     url(r'^logout$', 'photos.views.user_logout'),
-    url(r'^profile$', 'photos.views.user_profile')
+    url(r'^profile$', 'photos.views.user_profile'),
+    url(r'^create$', 'photos.views.create_photo')
 )
