@@ -8,8 +8,8 @@ def home(request):
     :param request: objeto request
     :return: objeto response
     """
-    photo_list = Photo.objects.all() # cogemos todas las fotos de la BD
+    photo_list = Photo.objects.order_by('-created_at')
     context = {
-        'photos' : photo_list
+        'photos' : photo_list[:3]
     }
     return render(request, 'photos/index.html', context)
