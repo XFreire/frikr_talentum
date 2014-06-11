@@ -8,9 +8,12 @@ LICENSES = (
     ('CC', 'Creative Commons')
 )
 
+VISIBILITY_PUBLIC = 'PUB'
+VISIBILITY_PRIVATE = 'PRI'
+
 VISIBILITY = (
-    ('PUB', 'Pública'),
-    ('PRI', 'Privada')
+    (VISIBILITY_PUBLIC, 'Pública'),
+    (VISIBILITY_PRIVATE, 'Privada')
 )
 
 class Photo(models.Model):
