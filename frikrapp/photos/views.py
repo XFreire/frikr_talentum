@@ -6,51 +6,67 @@ from django.contrib.auth import authenticate, login, logout
 from forms import LoginForm, PhotoForm
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
+from django.views.generic import View, ListView
+from django.utils.decorators import method_decorator
 
 
-def home(request):
-    """
-    Se ejecuta en / y carga la plantilla photos/templates/photos/index.html
-    :param request: objeto request
-    :return: objeto response
-    """
-    photo_list = Photo.objects.filter(visibility=VISIBILITY_PUBLIC).order_by('-created_at')
-    context = {
-        'photos' : photo_list[:3]
-    }
-    return render(request, 'photos/index.html', context)
+class HomeView(View):
 
-
-def photo_detail(request, pk):
-    """
-    Muestra el detalle de una foto
-    :param request: objeto request
-    :param pk: primary key de la foto
-    :return: objeto response
-    """
-    possible_photos = Photo.objects.filter(pk=pk)
-    if request.user.is_authenticated():
-        possible_photos = possible_photos.filter(Q(owner=request.user) | Q(visibility=VISIBILITY_PUBLIC))
-    else:
-        possible_photos = possible_photos.filter(visibility=VISIBILITY_PUBLIC)
-
-    if len(possible_photos) == 0:
-        return HttpResponseNotFound('No existe la foto seleccionada')
-    else:
+    def get(self, request):
+        """
+        Se ejecuta en / y carga la plantilla photos/templates/photos/index.html
+        :param request: objeto request
+        :return: objeto response
+        """
+        photo_list = Photo.objects.filter(visibility=VISIBILITY_PUBLIC).order_by('-created_at')
         context = {
-            'photo' : possible_photos[0]
+            'photos' : photo_list[:3]
         }
-        return render(request, 'photos/photo_detail.html', context)
+        return render(request, 'photos/index.html', context)
 
 
-def user_login(request):
-    """
-    Gestiona el login de un usuario
-    :param request: objeto request
-    :return: objeto response
-    """
-    error_messages = []
-    if request.method == 'POST':
+class PhotoDetailView(View):
+
+    def get(self, request, pk):
+        """
+        Muestra el detalle de una foto
+        :param request: objeto request
+        :param pk: primary key de la foto
+        :return: objeto response
+        """
+        possible_photos = Photo.objects.filter(pk=pk)
+        if request.user.is_authenticated():
+            possible_photos = possible_photos.filter(Q(owner=request.user) | Q(visibility=VISIBILITY_PUBLIC))
+        else:
+            possible_photos = possible_photos.filter(visibility=VISIBILITY_PUBLIC)
+
+        if len(possible_photos) == 0:
+            return HttpResponseNotFound('No existe la foto seleccionada')
+        else:
+            context = {
+                'photo' : possible_photos[0]
+            }
+            return render(request, 'photos/photo_detail.html', context)
+
+
+class UserLoginView(View):
+
+    def get(self, request):
+        login_form = LoginForm()
+        context = {
+            'form' : login_form
+        }
+        return render(request, 'photos/login.html', context)
+
+
+
+    def post(self, request):
+        """
+        Gestiona el login de un usuario
+        :param request: objeto request
+        :return: objeto response
+        """
+        error_messages = []
 
         login_form = LoginForm(request.POST)
         if login_form.is_valid():
@@ -68,32 +84,34 @@ def user_login(request):
                     return redirect(next_url)
                 else:
                     error_messages.append('El usuario no está activo')
-    else:
-        login_form = LoginForm()
 
-    context = {
-        'form' : login_form,
-        'errors' : error_messages
-    }
-    return render(request, 'photos/login.html', context)
+        context = {
+            'form' : login_form,
+            'errors' : error_messages
+        }
+        return render(request, 'photos/login.html', context)
 
 
-def user_logout(request):
-    logout(request)
-    return redirect('/')
+class UserLogoutView(View):
+
+    def get(self, request):
+        logout(request)
+        return redirect('/')
 
 
-@login_required() # forzamos a que el usuario esté autenticado
-def user_profile(request):
-    """
-    Presenta el perfil de un usuario con sus fotos
-    :param request: objeto request
-    :return: objeto response
-    """
-    context = {
-        'photos' : request.user.photo_set.all()
-    }
-    return render(request, 'photos/profile.html', context)
+class UserProfileView(View):
+
+    @method_decorator( login_required() ) # forzamos a que el usuario esté autenticado
+    def get(self, request):
+        """
+        Presenta el perfil de un usuario con sus fotos
+        :param request: objeto request
+        :return: objeto response
+        """
+        context = {
+            'photos' : request.user.photo_set.all()
+        }
+        return render(request, 'photos/profile.html', context)
 
 
 
@@ -121,8 +139,12 @@ def create_photo(request):
 
 
 
+class PhotoListView(ListView):
+    model = Photo
+    template_name = 'photos/photo_list.html'
 
-
+    def get_queryset(self):
+        return Photo.objects.filter(visibility=VISIBILITY_PUBLIC)
 
 
 
