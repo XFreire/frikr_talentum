@@ -3,7 +3,7 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 admin.autodiscover()
 
-from photos import views
+from photos import views, api
 
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
@@ -15,5 +15,34 @@ urlpatterns = patterns('',
     url(r'^login$', views.UserLoginView.as_view()),
     url(r'^logout$', views.UserLogoutView.as_view()),
     url(r'^profile$', views.UserProfileView.as_view()),
-    url(r'^create$', 'photos.views.create_photo')
+    url(r'^create$', 'photos.views.create_photo'),
+
+    # API URLs
+    url(r'^api/1.0/users/$', api.UserListAPI.as_view())
 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
