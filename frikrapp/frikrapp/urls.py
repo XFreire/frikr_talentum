@@ -17,8 +17,14 @@ urlpatterns = patterns('',
     url(r'^profile$', views.UserProfileView.as_view()),
     url(r'^create$', 'photos.views.create_photo'),
 
-    # API URLs
-    url(r'^api/1.0/users/$', api.UserListAPI.as_view())
+    # User API URLs
+    url(r'^api/1.0/users/$', api.UserListAPI.as_view()),
+    url(r'^api/1.0/users/(?P<pk>[0-9]+)$', api.UserDetailAPI.as_view()),
+
+    # Photo API URLs
+    url(r'^api/1.0/photos/$', api.PhotoListAPI.as_view()),
+    url(r'^api/1.0/photos/(?P<pk>[0-9]+)$', api.PhotoDetailAPI.as_view()),
+
 )
 
 
