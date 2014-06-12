@@ -9,7 +9,7 @@ class LoginForm(forms.Form):
 
 
 # lista de tacos http://goo.gl/G2nCu7
-BADWORDS = (u'aparcabicis', u'bocachancla', u'abollao', u'limpiatubos', u'mascachapas', u'diseñata')
+#BADWORDS = (u'aparcabicis', u'bocachancla', u'abollao', u'limpiatubos', u'mascachapas', u'diseñata')
 
 class PhotoForm(forms.ModelForm):
     """
@@ -19,7 +19,7 @@ class PhotoForm(forms.ModelForm):
         model = Photo
         fields = ['name', 'url', 'description', 'license', 'visibility']
 
-
+    """
     def clean(self):
         cleaned_data = super(PhotoForm, self).clean()
         description = cleaned_data.get('description', '')
@@ -28,6 +28,7 @@ class PhotoForm(forms.ModelForm):
                 raise forms.ValidationError(badword + u' no está permitido')
 
         return cleaned_data # todo ha ido OK
+    """
 
 
 

@@ -2,6 +2,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.core.exceptions import ValidationError
+
 
 DEFAULT_LICENSES = (
     ('RIG', 'Copyright'),
@@ -19,6 +21,9 @@ VISIBILITY = (
     (VISIBILITY_PRIVATE, 'Privada')
 )
 
+# permite que BADWORDS se pueda sobreescribir desde el settings.py
+BADWORDS = getattr(settings, 'BADWORDS', ())
+
 class Photo(models.Model):
 
     owner = models.ForeignKey(User)
@@ -32,3 +37,37 @@ class Photo(models.Model):
 
     def __unicode__(self):
         return self.name
+
+
+    def clean(self):
+        for badword in BADWORDS:
+            if badword in self.description:
+                raise ValidationError(badword + u'no está permitido')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

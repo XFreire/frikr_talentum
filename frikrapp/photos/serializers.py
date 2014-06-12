@@ -43,8 +43,6 @@ class UserSerializer(serializers.Serializer):
         return attrs # todo ha ido ok
 
 
-# permite que BADWORDS se pueda sobreescribir desde el settings.py
-BADWORDS = getattr(settings, 'BADWORDS', ())
 
 # las importaciones no tienen por qué ser al comienzo del fichero
 from models import Photo
@@ -54,14 +52,14 @@ class PhotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Photo
 
-
+    """
     def validate_description(self, attrs, source):
         description = attrs.get(source, '')
         for badword in BADWORDS:
             if badword.lower() in description.lower():
                 raise serializers.ValidationError(badword + u" no está permitido")
         return attrs # todo ha ido OK
-
+    """
 
 
 class PhotoListSerializer(PhotoSerializer):
