@@ -61,6 +61,13 @@ class PhotoListAPI(ListCreateAPIView):
     serializer_class = PhotoListSerializer
 
 
+    def get_serializer_class(self):
+        if self.request.method == "POST":
+            return PhotoSerializer
+        else:
+            return self.serializer_class
+        #return PhotoSerializer if self.request.method == "POST" else self.serializer_class
+
 
 class PhotoDetailAPI(RetrieveUpdateDestroyAPIView):
     """

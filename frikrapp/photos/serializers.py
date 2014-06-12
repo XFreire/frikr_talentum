@@ -2,7 +2,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
-
+from django.conf import settings
 
 class UserSerializer(serializers.Serializer):
 
@@ -35,12 +35,32 @@ class UserSerializer(serializers.Serializer):
         return instance
 
 
+    def validate(self, attrs):
+        existent_users = User.objects.filter(username=attrs.get('username'))
+        if len(existent_users) > 0:
+            raise serializers.ValidationError(u"Ya existe ese usuario")
+
+        return attrs # todo ha ido ok
+
+
+# permite que BADWORDS se pueda sobreescribir desde el settings.py
+BADWORDS = getattr(settings, 'BADWORDS', ())
+
+# las importaciones no tienen por qué ser al comienzo del fichero
 from models import Photo
 
 class PhotoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Photo
+
+
+    def validate_description(self, attrs, source):
+        description = attrs.get(source, '')
+        for badword in BADWORDS:
+            if badword.lower() in description.lower():
+                raise serializers.ValidationError(badword + u" no está permitido")
+        return attrs # todo ha ido OK
 
 
 

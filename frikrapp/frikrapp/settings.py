@@ -94,7 +94,7 @@ LICENSES = (
     ('CC4', 'Creative Commons 4'),
 )
 
-
+BADWORDS = (u'afinabanjos', u'mascachapas', u'abrazafarolas')
 
 
 
