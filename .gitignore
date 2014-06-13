@@ -58,3 +58,5 @@ docs/_build/
 # Frikr
 frikrenv
 *.sqlite3
+uploads/
+media/*
