@@ -3,6 +3,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from django.conf import settings
+from models import File
 
 class UserSerializer(serializers.Serializer):
 
@@ -51,6 +52,7 @@ class PhotoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Photo
+        read_only_fields = ('owner',)
 
     """
     def validate_description(self, attrs, source):
@@ -67,6 +69,12 @@ class PhotoListSerializer(PhotoSerializer):
     class Meta(PhotoSerializer.Meta):
         fields = ('id', 'owner', 'name')
 
+
+
+class FileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = File
 
 
 

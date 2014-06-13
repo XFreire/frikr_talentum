@@ -47,6 +47,12 @@ class Photo(models.Model):
 
 
 
+class File(models.Model):
+
+    path = models.FileField(upload_to="uploads")
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now_add=True, auto_now=True)
+
 
 
 
