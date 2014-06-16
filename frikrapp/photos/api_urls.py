@@ -1,5 +1,11 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import patterns, url, include
 from photos import api
+from rest_framework.routers import DefaultRouter
+
+# Creamos un router y registramos los viewsets
+
+photo_router = DefaultRouter()
+photo_router.register(r'photos', api.PhotoAPI)
 
 urlpatterns = patterns('',
 
@@ -8,8 +14,6 @@ urlpatterns = patterns('',
     url(r'^users/(?P<pk>[0-9]+)$', api.UserDetailAPI.as_view()),
 
     # Photo API URLs
-    url(r'^photos/$', api.PhotoListAPI.as_view()),
-    url(r'^photos/(?P<pk>[0-9]+)$', api.PhotoDetailAPI.as_view()),
-    url(r'^photos/upload$', api.PhotoUploadAPI.as_view()),
+    url(r'^', include(photo_router.urls)),
 
 )

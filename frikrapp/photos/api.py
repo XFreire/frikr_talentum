@@ -15,6 +15,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template import Context, loader
 from django.utils.html import strip_tags
 from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework import viewsets
 
 
 WELCOME_EMAIL_TEMPLATE = getattr(settings, 'WELCOME_EMAIL_TEMPLATE', 'photos/email/welcome.html')
@@ -93,7 +94,17 @@ class UserDetailAPI(APIView):
 
 
 
-class PhotoAPIQueryset:
+class PhotoAPI(viewsets.ModelViewSet):
+    """
+    Sustituye a PhotoListAPI y PhotoDetailAPI y lo hace todo en uno!
+    """
+    queryset = Photo.objects.all()
+    serializer_class = PhotoSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly, PhotoPermission)
+    filter_backends = (SearchFilter, OrderingFilter)  # permitimos buscar y ordenar
+    # permitimos buscar por nombre, descripción e incluso por el primer nombre del propietario
+    search_fields = ('name', 'description', 'owner__first_name')
+    ordering_fields = ('name', 'owner')  # permitimos ordenar por nombre y propietario
 
 
     def get_queryset(self):
@@ -108,30 +119,14 @@ class PhotoAPIQueryset:
             return Photo.objects.filter(visibility=VISIBILITY_PUBLIC)
 
 
-
-
-class PhotoListAPI(PhotoAPIQueryset, ListCreateAPIView):
-    """
-    Implementa el API de listado (GET) y creación (POST) de fotos
-    (Sí, en serio)
-    """
-    queryset = Photo.objects.all()
-    serializer_class = PhotoListSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, PhotoPermission)
-    filter_backends = (SearchFilter, OrderingFilter) # permitimos buscar y ordenar
-    # permitimos buscar por nombre, descripción e incluso por el primer nombre del propietario
-    search_fields = ('name', 'description', 'owner__first_name')
-    ordering_fields = ('name', 'owner') # permitimos ordenar por nombre y propietario
-
-
-
     def get_serializer_class(self):
-        if self.request.method == "POST":
-            return PhotoSerializer
+        """
+        OJO! Aquí diferencia con request.action en lugar de request.method!
+        """
+        if self.action == "list":
+            return PhotoListSerializer
         else:
             return self.serializer_class
-        #return PhotoSerializer if self.request.method == "POST" else self.serializer_class
-
 
 
     def pre_save(self, obj):
@@ -139,15 +134,6 @@ class PhotoListAPI(PhotoAPIQueryset, ListCreateAPIView):
         Asigna la autoría de la foto al usuario autenticado al crearla
         """
         obj.owner = self.request.user
-
-
-class PhotoDetailAPI(PhotoAPIQueryset, RetrieveUpdateDestroyAPIView):
-    """
-    Implementa el API de detalle (GET), actualización (PUT), y borrado (DELETE)
-    """
-    queryset = Photo.objects.all()
-    serializer_class = PhotoSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, PhotoPermission)
 
 
 
