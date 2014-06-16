@@ -2,37 +2,22 @@
 from rest_framework import permissions
 
 
-class UserPermission(permissions.BasePermission):
+class PhotoPermission(permissions.BasePermission):
 
     def has_permission(self, request, view):
         """
-        Define si se tiene permiso para realizar la acción
+        Permite realizar cualquier operacion sobre las fotos
         :param request: objeto request
         :param view: vista desde donde se ejecuta la acción
         :return: boolean
         """
-        from api import UserDetailAPI # evita la interdependencia con api.py
-
-        if request.method == "POST":
-            return True
-
-        # si es superuser, puede hacer un GET, PUT y DELETE si quiere
-        elif request.user.is_superuser:
-            return True
-
-        # si no es superuser, le dejamos acceder sólo al detalle
-        elif isinstance(view, UserDetailAPI):
-            return True
-
-        # en cualquier otro caso, no permitimos realizar la acción
-        else:
-            return False
+        return True
 
 
     def has_object_permission(self, request, view, obj):
         """
-        Define si se tiene permiso para hacer PUT o DELETE
-        sobre obj.
+        Define si se tiene permiso para hacer GET, PUT o DELETE
+        sobre una foto.
         Sólo tiene permiso si es propietario o es superuser
         :param request: objeto request
         :param view: vista desde donde se ejecuta
@@ -43,31 +28,3 @@ class UserPermission(permissions.BasePermission):
             return True
         else:
             return False
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

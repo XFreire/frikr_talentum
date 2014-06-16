@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status
 from models import Photo, VISIBILITY_PUBLIC, File
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
-from permissions import UserPermission
+from permissions import PhotoPermission
 from django.db.models import Q
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
@@ -22,8 +22,6 @@ WELCOME_EMAIL_FROM = 'root@localhost'
 DEBUG = getattr(settings, 'DEBUG', False)
 
 class UserListAPI(APIView):
-
-    permission_classes = (UserPermission,)
 
     def get(self, request):
         users = User.objects.all()
@@ -61,9 +59,6 @@ class UserListAPI(APIView):
 
 
 class UserDetailAPI(APIView):
-
-    permission_classes = (UserPermission,)
-
 
     def get(self, request, pk):
         user = get_object_or_404(User, pk=pk)
@@ -121,7 +116,7 @@ class PhotoListAPI(PhotoAPIQueryset, ListCreateAPIView):
     """
     queryset = Photo.objects.all()
     serializer_class = PhotoListSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthenticatedOrReadOnly, PhotoPermission)
 
 
 
@@ -147,13 +142,14 @@ class PhotoDetailAPI(PhotoAPIQueryset, RetrieveUpdateDestroyAPIView):
     """
     queryset = Photo.objects.all()
     serializer_class = PhotoSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
-
+    permission_classes = (IsAuthenticatedOrReadOnly, PhotoPermission)
 
 
 
 class PhotoUploadAPI(CreateAPIView):
-
+    """
+    Permite subir fotos
+    """
     queryset = File.objects.all()
     serializer_class = FileSerializer
     permission_classes = (IsAuthenticated,)
