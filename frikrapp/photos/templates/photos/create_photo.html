@@ -9,7 +9,7 @@
 {% if photo %}
     <span style="color:green">
         Guardado con éxito!
-        <a href="/photos/{{ photo.pk }}">Ver foto</a>
+        <a href="{% url 'photo_detail' photo.pk %}">Ver foto</a>
     </span>
 {% endif %}
 
