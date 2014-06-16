@@ -14,6 +14,7 @@ from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template import Context, loader
 from django.utils.html import strip_tags
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 
 WELCOME_EMAIL_TEMPLATE = getattr(settings, 'WELCOME_EMAIL_TEMPLATE', 'photos/email/welcome.html')
@@ -117,6 +118,10 @@ class PhotoListAPI(PhotoAPIQueryset, ListCreateAPIView):
     queryset = Photo.objects.all()
     serializer_class = PhotoListSerializer
     permission_classes = (IsAuthenticatedOrReadOnly, PhotoPermission)
+    filter_backends = (SearchFilter, OrderingFilter) # permitimos buscar y ordenar
+    # permitimos buscar por nombre, descripción e incluso por el primer nombre del propietario
+    search_fields = ('name', 'description', 'owner__first_name')
+    ordering_fields = ('name', 'owner') # permitimos ordenar por nombre y propietario
 
 
 
