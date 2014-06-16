@@ -5,6 +5,9 @@ admin.autodiscover()
 
 from photos import views, api
 
+from django.conf import settings
+from django.conf.urls.static import static
+
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
 
@@ -26,30 +29,4 @@ urlpatterns = patterns('',
     url(r'^api/1.0/photos/(?P<pk>[0-9]+)$', api.PhotoDetailAPI.as_view()),
     url(r'^api/1.0/photos/upload$', api.PhotoUploadAPI.as_view()),
 
-)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

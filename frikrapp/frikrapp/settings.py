@@ -104,3 +104,7 @@ REST_FRAMEWORK = {
     'MAX_PAGINATE_BY' : 10,
     'PAGINATE_BY_PARAM' : 'page_size'
 }
+
+# Habilitamos la carpeta media donde se suben los archivos desde el API
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/' # http://127.0.0.1:8000/media/<whatever>
