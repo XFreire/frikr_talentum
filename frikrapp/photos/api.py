@@ -10,8 +10,16 @@ from models import Photo, VISIBILITY_PUBLIC, File
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from permissions import UserPermission
 from django.db.models import Q
-from django.core.mail import send_mail
+from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.template import Context, loader
+from django.utils.html import strip_tags
 
+
+WELCOME_EMAIL_TEMPLATE = getattr(settings, 'WELCOME_EMAIL_TEMPLATE', 'photos/email/welcome.html')
+WELCOME_EMAIL_SUBJECT = 'Hola {0} {1}!'
+WELCOME_EMAIL_FROM = 'root@localhost'
+DEBUG = getattr(settings, 'DEBUG', False)
 
 class UserListAPI(APIView):
 
@@ -26,10 +34,29 @@ class UserListAPI(APIView):
     def post(self, request):
         serializer = UserSerializer(data=request.DATA) # en lugar request.POST
         if serializer.is_valid():
-            serializer.save()
+            new_user = serializer.save()
+            self.send_welcome_email(new_user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def send_welcome_email(self, user):
+        # recogemos el asunto, direccion remitente y destino
+        subject = WELCOME_EMAIL_SUBJECT.format(user.first_name, user.last_name)
+        from_email = WELCOME_EMAIL_FROM
+        to = user.email
+
+        # Renderizamos la plantilla con el e-mail de bienvenida
+        template = loader.get_template(WELCOME_EMAIL_TEMPLATE)
+        context = Context( { 'new_user': user } )
+        html_content = template.render(context) # renderizamos la plantilla
+        text_content = strip_tags(html_content) # texto plano sin HTML
+
+        # creamos un mensaje de e-mail
+        msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+        msg.attach_alternative(html_content, "text/html")
+        msg.send(fail_silently=(not DEBUG)) # si falla el envío de e-mail, no peta
 
 
 

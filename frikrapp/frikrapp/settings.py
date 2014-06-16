@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Django settings for frikrapp project.
 
@@ -108,3 +109,23 @@ REST_FRAMEWORK = {
 # Habilitamos la carpeta media donde se suben los archivos desde el API
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/' # http://127.0.0.1:8000/media/<whatever>
+
+
+# Welcome e-mail settings
+WELCOME_EMAIL_SUBJECT = 'Bienvenido a Frikr {0} {1}!'
+WELCOME_EMAIL_FROM = 'hola@frikr.com'
+
+# E-mail host settings
+# https://docs.djangoproject.com/en/1.6/topics/email/
+# Para desarrollo: https://docs.djangoproject.com/en/1.6/topics/email/#configuring-email-for-development
+# Ejecutar en una consola python -m smtpd -n -c DebuggingServer localhost:1025 para depurar el correo
+EMAIL_HOST = '127.0.0.1'
+EMAIL_PORT = '1025'
+
+
+# Usar GMail como sistema de envío de e-mail
+#EMAIL_USE_TLS = True
+#EMAIL_HOST = 'smtp.gmail.com'
+#EMAIL_HOST_USER = 'tu.cuenta@gmail.com'
+#EMAIL_HOST_PASSWORD = 'la.de.tu.cuenta'
+#EMAIL_PORT = 587
