@@ -103,7 +103,12 @@ BADWORDS = (u'afinabanjos', u'mascachapas', u'abrazafarolas')
 REST_FRAMEWORK = {
     'PAGINATE_BY' : 5,
     'MAX_PAGINATE_BY' : 10,
-    'PAGINATE_BY_PARAM' : 'page_size'
+    'PAGINATE_BY_PARAM' : 'page_size',
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer', # para JSON
+        'rest_framework.renderers.XMLRenderer',  # para XML, hay que añadir la cabecera Accept: application/xml
+        'rest_framework.renderers.BrowsableAPIRenderer',  # para API Navigable
+    )
 }
 
 # Habilitamos la carpeta media donde se suben los archivos desde el API
